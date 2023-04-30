@@ -25,7 +25,8 @@ class Game
     @player = Player.new('Player 1', self, @board, @mastermind)
     @current_player = @player
     system 'clear' # clear the terminal
-    puts 'Welcome to Mastermind!'
+    puts 'Welcome to Mastermind! Press enter to continue'
+    gets
     @mastermind.generate_code
     @board.display
   end
@@ -48,9 +49,8 @@ class Game
   # play again method
   def play_again
     puts 'Would you like to play again? (y/n)'
-    input = gets.chomp.downcase
-    case input
-    when 'y' || 'yes' 
+    case gets.chomp.downcase
+    when 'y' || 'yes'
       restart
     when 'n' || 'no'
       quit
@@ -121,14 +121,15 @@ class Board
       feedback_display = feedback.map { |color| sprintf("%-7s", color) }.join(' | ')
       puts "| #{row_display} |-| #{feedback_display} |"
     end
+    puts 'Please enter your guess or type help for more information'
   end
 
   # table header
   def table_header
-    puts 'When all feedback is black, you win! White means correct color, wrong position.'
-    guess_padding = " " * ((40 - 'Guess'.length) / 2)
+    puts "Available colors: red, green, blue, yellow, orange, purple type 'help' for more information"
+    guess_padding = " " * ((38 - 'Guess'.length) / 2)
     feedback_padding = " " * ((40 - 'Feedback'.length) / 2)
-    puts guess_padding + 'Guess ' + guess_padding + '|-|' + feedback_padding + 'Feedback' + feedback_padding
+    puts "#{guess_padding} Guess #{guess_padding} |-| #{feedback_padding} Feedback #{feedback_padding}"
     puts '----------------------------------------|-|---------------------------------------'
   end
 
@@ -164,14 +165,12 @@ class Player
 
   # player input method, handles the player input
   def player_input
-    puts 'Please enter your guess or type help for more information'
     input = gets.chomp.downcase
-    case input
-    when 'quit' || 'q' # quit the game
+    if input == 'quit' || input == 'q' # quit the game
       @game.quit
-    when 'restart' || 'r' # restart the game
+    elsif input == 'restart' || input == 'r' # restart the game
       @game.restart
-    when 'help' || 'h' # display the help menu
+    elsif input == 'help' || input == 'h' # display the help menu
       @game.help
     else # otherwise it is a guess and should be validated
       validate_guess(input)
@@ -236,15 +235,17 @@ class Mastermind
     @code = []
     @feedback = []
   end
-  
+
   attr_reader :feedback
 
   def generate_code
     # generate the code
     # should be a sequence of 4 colours
-    # will be randomly generated but for now is hard coded
+    # will be randomly generated
     # should be stored in the code array
-    @code = %w[red red blue yellow]
+    for i in 1..4
+      @code.push(%w[red green blue yellow orange purple].sample)
+    end
   end
 
   def code_response(guess)
