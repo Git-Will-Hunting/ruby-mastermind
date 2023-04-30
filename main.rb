@@ -27,24 +27,37 @@ class Game
     system 'clear' # clear the terminal
     puts 'Welcome to Mastermind!'
     @mastermind.generate_code
+    @board.display
   end
 
   attr_accessor :turn_count
 
   # the game loop
   def play
-    while @turn_count < 12
-      # display the board
-      @board.display
-      # get the guess from the player
-      @current_player.player_input
-      binding.pry
+    # get the guess from the player until they win or lose
+    @current_player.player_input until @turn_count == 11 || @board.win?
+    if @board.win? # if they win
+      puts 'Congrats you win!'
+    else # if they lose
+      puts 'Sorry you lose!'
     end
-    # check the guess against the code
-    # set the feedback
-    # check if the player has won
-    # if they have, end the game
-    # if they haven't, increment the turn count
+    # check if they want to play again
+    play_again
+  end
+
+  # play again method
+  def play_again
+    puts 'Would you like to play again? (y/n)'
+    input = gets.chomp.downcase
+    case input
+    when 'y' || 'yes' 
+      restart
+    when 'n' || 'no'
+      quit
+    else
+      puts 'Invalid input'
+      play_again
+    end
   end
 
   # quit method to exit the game
@@ -101,20 +114,39 @@ class Board
     # should be displayed in the terminal
     # should be updated after each turn
     system 'clear' # clear the terminal
+    table_header
     @board.each_with_index do |row, index|
-      puts "| #{row[0]} | #{row[1]} | #{row[2]} | #{row[3]} |-| #{@feedback[index]}|"
+      feedback = @feedback[index]
+      row_display = row.map { |color| sprintf("%-7s", color) }.join(' | ')
+      feedback_display = feedback.map { |color| sprintf("%-7s", color) }.join(' | ')
+      puts "| #{row_display} |-| #{feedback_display} |"
     end
+  end
+
+  # table header
+  def table_header
+    puts 'When all feedback is black, you win! White means correct color, wrong position.'
+    guess_padding = " " * ((40 - 'Guess'.length) / 2)
+    feedback_padding = " " * ((40 - 'Feedback'.length) / 2)
+    puts guess_padding + 'Guess ' + guess_padding + '|-|' + feedback_padding + 'Feedback' + feedback_padding
+    puts '----------------------------------------|-|---------------------------------------'
   end
 
   # receive guess method
   def receive_guess(guess)
     @board[@game.turn_count] = guess
     receive_feedback(@mastermind.feedback)
+    display
   end
 
   # receive feedback method
   def receive_feedback(feedback)
     @feedback[@game.turn_count] = feedback
+  end
+
+  # check if the player has won
+  def win?
+    @feedback.any? { |subarray| subarray.all?('black')}
   end
 end
 
@@ -212,17 +244,17 @@ class Mastermind
     # should be a sequence of 4 colours
     # will be randomly generated but for now is hard coded
     # should be stored in the code array
-    @code = %w[red green blue yellow]
+    @code = %w[red red blue yellow]
   end
 
   def code_response(guess)
-    #clear the feedback array
+    # clear the feedback array
     @feedback = []
     # check the guess against the code
-    @code.each_with_index do |color, index|
-      if guess[index] == color
+    guess.each_with_index do |color, index|
+      if @code[index] == color
         @feedback.push('black')
-      elsif guess.include?(color)
+      elsif @code.include?(color)
         @feedback.push('white')
       else
         @feedback.push(' ')
