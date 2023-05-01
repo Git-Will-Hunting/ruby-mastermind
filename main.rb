@@ -168,18 +168,18 @@ end
 
 # Game class, handles the game loop and input
 class Game
-  def initialize(game_Settings, config)
+  def initialize(settings, config)
     @turn_count = 0
     @mastermind = Mastermind.new
     @board = Board.new(self, @mastermind)
-    @player_count = game_Settings[:player_count]
-    @player1 = Player.new(game_Settings[:player1], self, @board, config, @mastermind)
-    @player2 = Player.new(game_Settings[:player2], self, @board, config, @mastermind)
-    @difficulty = game_Settings[:difficulty]
-    @max_turns = game_Settings[:max_turns]
+    @player_count = settings[:player_count]
+    @player1 = Player.new(settings[:player1], self, @board, config, @mastermind)
+    @player2 = Player.new(settings[:player2], self, @board, config, @mastermind)
+    @difficulty = settings[:difficulty]
+    @max_turns = settings[:max_turns]
     @game_settings = config
     system 'clear' # clear the terminal
-    if game_Settings[:codemaker] == 'player1' # set the codemaker and codebreaker
+    if settings[:codemaker] == 'player1' # set the codemaker and codebreaker
       @codemaker = @player1
       @codebreaker = @player2
     else
@@ -238,7 +238,6 @@ class Game
     else
       @mastermind.generate_code
     end
-    @board = Board.new(self, @mastermind)
     @board.display
     # get the guess from the player until they win or lose
     @codebreaker.player_input until @turn_count == @max_turns || @board.win?
@@ -310,7 +309,6 @@ class Board
   # check if the player has won
   def win?
     @feedback.any? { |subarray| subarray.all?('black') }
-    binding.pry
   end
 end
 
