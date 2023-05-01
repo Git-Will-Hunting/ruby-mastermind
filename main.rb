@@ -22,19 +22,25 @@ class Game
     @turn_count = 0
     @mastermind = Mastermind.new
     @board = Board.new(self, @mastermind)
-    @player = Player.new('Player 1', self, @board, @mastermind)
-    @current_player = @player
+    @player1 = Player.new('Player 1', self, @board, @mastermind)
+    @player2 = Player.new('Player 2', self, @board, @mastermind)
+    @current_player = @player1
+    @player_count = 1
+    @codemaker = @player2
     system 'clear' # clear the terminal
-    puts 'Welcome to Mastermind! Press enter to continue'
-    gets
-    @mastermind.generate_code
-    @board.display
+    main_menu
   end
 
   attr_accessor :turn_count
 
   # the game loop
   def play
+    if @player_count == 2
+      puts "#{@codemaker.name} is the mastermind, please set a secret code so #{@current_player.name} can guess"
+      @mastermind.pick_code
+    else
+    @mastermind.generate_code
+    @board.display
     # get the guess from the player until they win or lose
     @current_player.player_input until @turn_count == 11 || @board.win?
     if @board.win? # if they win
@@ -53,13 +59,69 @@ class Game
     when 'y' || 'yes'
       restart
     when 'n' || 'no'
-      quit
+      main_menu
     else
       puts 'Invalid input'
       play_again
     end
   end
 
+  #main menu method
+  def main_menu
+    system 'clear' # clear the terminal
+    puts 'Welcome to Mastermind! /n/n 1. Player selection /n 2. Start /n 3. Help /n 4. Quit'
+    case gets.chomp.downcase
+    when '1'
+      player_selection
+    when '2'
+      play
+    when '3'
+      help
+    when '4'
+      quit
+    else
+      puts 'Invalid input'
+      main_menu
+    end
+  end
+
+  # player selection method
+  def player_selection
+    system 'clear' # clear the terminal
+    puts 'Please select number of players: /n 1. Human /n 2. Computer'
+    case gets.chomp.downcase
+    when '1'
+      puts 'Please enter your name'
+      name = gets.chomp
+      @player1 = Player.new(name, self, @board, @mastermind)
+      main_menu
+    when '2'
+      puts "Please the first player's name" 
+      name = gets.chomp
+      puts "Please the second player's name"
+      @player1 = Player.new(name, self, @board, @mastermind)
+      @player2 = Player.new(name, self, @board, @mastermind)
+      @player_count = 2
+      puts 'Who will be the mastermind? (1/2)'
+      case gets.chomp.downcase
+      when '1'
+        @codemaker = @player1
+        @current_player = @player2
+      when '2'
+        @codemaker = @player2
+        @current_player = @player1
+      else
+        puts 'Invalid input'
+        player_selection
+      end
+      main_menu
+    else
+      puts 'Invalid input'
+      player_selection
+    end
+  end
+
+  
   # quit method to exit the game
   def quit
     puts 'Thanks for playing! Press enter to exit'
@@ -238,6 +300,28 @@ class Mastermind
 
   attr_reader :feedback
 
+  # pick the code method
+  def pick_code
+    # should be a sequence of 4 colours
+    # should be picked by the mastermind player
+    # should be stored in the code array
+    puts 'Please enter your code'
+    @code = [] # clear the code array
+    gets.chomp.downcase.split(' ').each do |color|
+      if %w[red green blue yellow orange purple].include?(color)
+        @code.push(color)
+      else
+        puts 'Invalid code, please enter 4 colours separated by spaces /n'
+        pick_code
+      end
+    # should have 4 values in @code
+    if @code.length != 4
+      puts 'Invalid code, please enter 4 colours separated by spaces /n'
+      pick_code
+    end
+  end
+
+  # generate code method
   def generate_code
     # generate the code
     # should be a sequence of 4 colours
