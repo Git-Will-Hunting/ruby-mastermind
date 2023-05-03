@@ -1,3 +1,9 @@
+<<<<<<< Updated upstream
+require 'pry-byebug'
+=======
+# frozen_string_literal: true
+>>>>>>> Stashed changes
+
 require 'pry-byebug'
 
 # mastermind game
@@ -265,5 +271,9 @@ class Mastermind
 end
 
 # Start the game
+<<<<<<< Updated upstream
 game = Game.new
 game.play
+=======
+GameSettings.new
+>>>>>>> Stashed changes
