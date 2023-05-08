@@ -1,6 +1,6 @@
 # Description: Contains all the text content for the game
 
-controls_message = <<-CONTROLS
+controls_text = <<-CONTROLS
     Controls
     Type colours separated by a space to make a guess.
     The player can enter 'quit' or 'q' to quit the game.
@@ -16,7 +16,7 @@ welcome_message = <<-WELCOME
     Press 'Enter' to continue
     WELCOME
 
-main_menu = <<-MAINMENU
+main_menu_text = <<-MAINMENU
     Main Menu
     1. Player Select
     2. Set Max Turns
@@ -32,7 +32,7 @@ quit_message = <<-QUIT
     'Press enter to exit'
     QUIT
 
-pause_message = <<-PAUSE
+pause_menu_text = <<-PAUSE
     Game paused
     Press 'h' for help
     Press 'm' for main menu
@@ -49,21 +49,21 @@ player_select = <<-PLAYERSELECT
     4. Computer vs Computer (not yet implemented)
     PLAYERSELECT
 
-max_turns = <<-MAXTURNS
+max_turns_select = <<-MAXTURNS
     Set Max Turns
     Enter a number between 1 and 12 (the default is 10)
     MAXTURNS
 
-max_turns2 = "Max turns set to #{@game_settings[:max_turns]}, is this okay? (y/n)"
+max_turns_confirm = "Max turns set to #{@game_settings[:max_turns]}, is this okay? (y/n)"
 
-difficulty = <<-DIFFICULTY
-    Set Difficulty
-    1. Easy (default)
+difficulty_select = <<-DIFFICULTY
+    Set Difficulty (coming soon)
+    1. Easy (default, extra feedback is provided)
     2. Normal (Feedback is provided based on mastermind rules)
     3. Hard (No feedback when the colour is in the wrong position)
     DIFFICULTY
 
-rules = <<-RULES
+rules_text = <<-RULES
     Mastermind is a code breaking game. The code is a sequence of 4 colours
     The colours are red, green, blue, yellow, orange, purple
     The code can have duplicates of the same colour
